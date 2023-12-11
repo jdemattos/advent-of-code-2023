@@ -65,28 +65,39 @@ fn valid_game(bytes: &[u8]) -> Option<usize> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::str;
 
     #[test]
     fn test_valid_game() {
-        assert_eq!(
-            valid_game(b"Game 1: 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green"),
-            Some(1)
+        assert_valid_game(
+            b"Game 1: 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green",
+            Some(1),
         );
-        assert_eq!(
-            valid_game(b"Game 2: 1 blue, 2 green; 3 green, 4 blue, 1 red; 1 green, 1 blue"),
-            Some(2)
+        assert_valid_game(
+            b"Game 2: 1 blue, 2 green; 3 green, 4 blue, 1 red; 1 green, 1 blue",
+            Some(2),
         );
-        assert_eq!(
-            valid_game(b"Game 3: 8 green, 6 blue, 20 red; 5 blue, 4 red, 13 green; 5 green, 1 red"),
-            None
+        assert_valid_game(
+            b"Game 3: 8 green, 6 blue, 20 red; 5 blue, 4 red, 13 green; 5 green, 1 red",
+            None,
         );
-        assert_eq!(
-            valid_game(b"Game 4: 1 green, 3 red, 6 blue; 3 green, 6 red; 3 green, 15 blue, 14 red"),
-            None
+        assert_valid_game(
+            b"Game 4: 1 green, 3 red, 6 blue; 3 green, 6 red; 3 green, 15 blue, 14 red",
+            None,
         );
+        assert_valid_game(
+            b"Game 5: 6 red, 1 blue, 3 green; 2 blue, 1 red, 2 green",
+            Some(5),
+        );
+    }
+
+    fn assert_valid_game(input: &[u8], expected: Option<usize>) {
+        let actual = valid_game(input);
+        let input_str = str::from_utf8(input).unwrap();
         assert_eq!(
-            valid_game(b"Game 5: 6 red, 1 blue, 3 green; 2 blue, 1 red, 2 green"),
-            Some(5)
+            actual, expected,
+            "expected {:?} from {}, actual {:?}",
+            expected, input_str, actual
         );
     }
 }
