@@ -62,7 +62,7 @@ const RED_COUNT: usize = 12;
 const GREEN_COUNT: usize = 13;
 const BLUE_COUNT: usize = 14;
 
-// NOTE: I wrote my own token parser because I wasn't sure if how "lazy" Rust std libraries are for identifying tokens
+// NOTE: I wrote my own token parser because I wasn't sure of how "lazy" Rust std libraries are for identifying tokens
 // and producing byte slices in an efficient manner. I may rewrite this using something like .split(b' ') which may have
 // the same performance. I also just wanted an excuse to try token parsing with Rust enum types.
 
