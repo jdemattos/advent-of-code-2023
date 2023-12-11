@@ -19,152 +19,47 @@ fn main() -> Result<(), Error> {
 }
 
 fn valid_game(bytes: &[u8]) -> Option<usize> {
-    let mut iter = TokenIterator::new(bytes);
+    let mut divider = bytes.split(|byte| *byte == b':');
 
-    let token = iter.next();
-    debug_assert!(token.unwrap() == Token::Game);
-    let Token::Uint(game_id) = iter.next().unwrap() else {
-        unreachable!();
-    };
-    let token = iter.next();
-    debug_assert!(token.unwrap() == Token::Colon);
+    let game_id = atoi::<usize>(
+        divider
+            .next()
+            .unwrap()
+            .split(|byte| *byte == b' ')
+            .nth(1)
+            .unwrap(),
+    )
+    .unwrap();
 
-    while let Some(token) = iter.next() {
-        if let Token::Uint(count) = token {
-            let Token::Color(color) = iter.next().unwrap() else {
-                unreachable!();
-            };
+    let tokens = divider
+        .next()
+        .unwrap()
+        .split(|byte| !byte.is_ascii_alphanumeric())
+        .filter(|token| !token.is_empty());
 
-            match color {
-                Color::Red => {
-                    if count > RED_COUNT {
-                        return None;
-                    }
-                }
-                Color::Green => {
-                    if count > GREEN_COUNT {
-                        return None;
-                    }
-                }
-                Color::Blue => {
-                    if count > BLUE_COUNT {
-                        return None;
-                    }
+    let mut count: usize = 0;
+    for token in tokens {
+        match token {
+            b"red" => {
+                if count > 12 {
+                    return None;
                 }
             }
+            b"green" => {
+                if count > 13 {
+                    return None;
+                }
+            }
+            b"blue" => {
+                if count > 14 {
+                    return None;
+                }
+            }
+            _ => count = atoi::<usize>(token).unwrap(),
         }
     }
 
     Some(game_id)
-}
-
-const RED_COUNT: usize = 12;
-const GREEN_COUNT: usize = 13;
-const BLUE_COUNT: usize = 14;
-
-// NOTE: I wrote my own token parser because I wasn't sure of how "lazy" Rust std libraries are for identifying tokens
-// and producing byte slices in an efficient manner. I may rewrite this using something like .split(b' ') which may have
-// the same performance. I also just wanted an excuse to try token parsing with Rust enum types.
-
-/*
-EBNF notation
-game ::= 'Game ' uint ': ' samples
-samples ::= sample ( '; ' sample )*
-sample ::= count_color ( ', ' count_color )*
-count_color ::= uint ' ' color
-uint ::= digit+
-digit ::= '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9'
-color ::= 'red' | 'green' | 'blue'
- */
-
-#[derive(Debug, PartialEq)]
-enum Token {
-    Game,
-    Colon,
-    Semicolon,
-    Comma,
-    Uint(usize),
-    Color(Color),
-}
-
-#[derive(Debug, PartialEq)]
-enum Color {
-    Red,
-    Green,
-    Blue,
-}
-
-struct TokenIterator<'a> {
-    bytes: &'a [u8],
-    index: usize,
-}
-
-impl<'a> TokenIterator<'a> {
-    fn new(bytes: &'a [u8]) -> TokenIterator<'a> {
-        TokenIterator { bytes, index: 0 }
-    }
-
-    fn parse_uint(&mut self) -> Token {
-        let start = self.index;
-        while self.index < self.bytes.len() && self.bytes[self.index].is_ascii_digit() {
-            self.index += 1;
-        }
-
-        let span = &self.bytes[start..self.index];
-        let number = atoi::<usize>(span).unwrap();
-
-        Token::Uint(number)
-    }
-
-    fn parse_color(&mut self) -> Token {
-        let start = self.index;
-        while self.index < self.bytes.len() && self.bytes[self.index].is_ascii_alphabetic() {
-            self.index += 1;
-        }
-
-        let span = &self.bytes[start..self.index];
-        match span {
-            b"red" => Token::Color(Color::Red),
-            b"green" => Token::Color(Color::Green),
-            b"blue" => Token::Color(Color::Blue),
-            _ => unreachable!(),
-        }
-    }
-}
-
-impl<'a> Iterator for TokenIterator<'a> {
-    type Item = Token;
-
-    fn next(&mut self) -> Option<Self::Item> {
-        while self.index < self.bytes.len() {
-            match self.bytes[self.index] {
-                b' ' => self.index += 1,
-                b'G' => {
-                    self.index += b"Game ".len();
-                    return Some(Token::Game);
-                }
-                b':' => {
-                    self.index += b": ".len();
-                    return Some(Token::Colon);
-                }
-                b';' => {
-                    self.index += b"; ".len();
-                    return Some(Token::Semicolon);
-                }
-                b',' => {
-                    self.index += b", ".len();
-                    return Some(Token::Comma);
-                }
-                b'0'..=b'9' => {
-                    return Some(self.parse_uint());
-                }
-                _ => {
-                    return Some(self.parse_color());
-                }
-            }
-        }
-        None
-    }
 }
 
 #[cfg(test)]
