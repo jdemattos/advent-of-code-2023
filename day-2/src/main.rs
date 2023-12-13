@@ -19,26 +19,17 @@ fn main() -> Result<(), Error> {
 }
 
 fn valid_game(bytes: &[u8]) -> Option<usize> {
-    let mut divider = bytes.split(|byte| *byte == b':');
-
-    let game_id = atoi::<usize>(
-        divider
-            .next()
-            .unwrap()
-            .split(|byte| *byte == b' ')
-            .nth(1)
-            .unwrap(),
-    )
-    .unwrap();
-
-    let tokens = divider
-        .next()
-        .unwrap()
+    let mut alphanumeric_tokens = bytes
         .split(|byte| !byte.is_ascii_alphanumeric())
         .filter(|token| !token.is_empty());
 
+    // skip "Game" token
+    alphanumeric_tokens.next();
+
+    let game_id = atoi::<usize>(alphanumeric_tokens.next().unwrap()).unwrap();
+
     let mut count: usize = 0;
-    for token in tokens {
+    for token in alphanumeric_tokens {
         match token {
             b"red" => {
                 if count > 12 {
