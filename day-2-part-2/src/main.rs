@@ -4,8 +4,8 @@ use std::fs::File;
 use std::io::{BufRead, BufReader, Error};
 
 fn main() -> Result<(), Error> {
-    let bytes = File::open("input.txt")?;
-    let reader = BufReader::new(bytes);
+    let input = File::open("input.txt")?;
+    let reader = BufReader::new(input);
 
     let mut sum: usize = 0;
     for line in reader.lines() {
