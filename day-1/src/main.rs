@@ -35,10 +35,10 @@ mod tests {
 
     #[test]
     fn test_extract_outer_digits() {
-        assert_extract_outer_digits(b"1abc2", 12);
-        assert_extract_outer_digits(b"pqr3stu8vwx", 38);
-        assert_extract_outer_digits(b"a1b2c3d4e5f", 15);
-        assert_extract_outer_digits(b"treb7uchet", 77);
+        assert_process_outer_digits(b"1abc2", 12);
+        assert_process_outer_digits(b"pqr3stu8vwx", 38);
+        assert_process_outer_digits(b"a1b2c3d4e5f", 15);
+        assert_process_outer_digits(b"treb7uchet", 77);
     }
 
     #[test]
@@ -49,7 +49,7 @@ mod tests {
         assert_eq!(actual, expected, "expected {}, actual {}", expected, actual);
     }
 
-    fn assert_extract_outer_digits(input: &[u8], expected: usize) {
+    fn assert_process_outer_digits(input: &[u8], expected: usize) {
         let actual = process_outer_digits(input);
         let input_str = std::str::from_utf8(input).unwrap();
         assert_eq!(
