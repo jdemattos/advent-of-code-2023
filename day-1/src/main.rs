@@ -10,22 +10,19 @@ fn process_input() -> usize {
         .split(|byte| *byte == b'\n')
         .filter(|line| !line.is_empty());
 
-    let sum = lines
-        .map(|line| extract_outer_digits(line))
-        .sum();
+    let sum = lines.map(|line| process_outer_digits(line)).sum();
 
     sum
 }
 
-fn extract_outer_digits(line: &[u8]) -> usize {
-    let first_digit = line.iter().find_map(|byte| digit(byte)).unwrap();
-    // NOTE: the DoubleEndedIterator trait allows us to iterate in reverse efficiently via rev(). this is pretty unusual to see in a programming language.
-    let last_digit = line.iter().rev().find_map(|byte| digit(byte)).unwrap();
+fn process_outer_digits(line: &[u8]) -> usize {
+    let first_digit = line.iter().find_map(parse_digit).unwrap();
+    let last_digit = line.iter().rev().find_map(parse_digit).unwrap();
 
     10 * first_digit + last_digit
 }
 
-fn digit(byte: &u8) -> Option<usize> {
+fn parse_digit(byte: &u8) -> Option<usize> {
     match byte {
         b'1'..=b'9' => Some((byte - b'0').into()),
         _ => None,
@@ -53,7 +50,7 @@ mod tests {
     }
 
     fn assert_extract_outer_digits(input: &[u8], expected: usize) {
-        let actual = extract_outer_digits(input);
+        let actual = process_outer_digits(input);
         let input_str = std::str::from_utf8(input).unwrap();
         assert_eq!(
             actual, expected,
