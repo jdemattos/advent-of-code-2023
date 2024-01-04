@@ -1,0 +1,8 @@
+[package]
+name = "advent-of-code-2023-day-4"
+version = "0.1.0"
+edition = "2021"
+authors = ["Jamin DeMattos <jaydemattos@gmail.com>"]
+
+[dependencies]
+atoi = "2.0.0"
