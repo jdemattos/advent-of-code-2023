@@ -1,5 +1,5 @@
-use std::collections::BTreeSet;
 use atoi::atoi;
+use std::collections::BTreeSet;
 
 fn main() {
     let input = include_bytes!("../input.txt");
@@ -8,9 +8,9 @@ fn main() {
     println!("{}", score);
 }
 
-
 fn process_input(bytes: &[u8]) -> usize {
-    let lines = bytes.split(|&byte| byte == b'\n')
+    let lines = bytes
+        .split(|&byte| byte == b'\n')
         .filter(|line| !line.is_empty());
 
     let mut total_score = 0;
@@ -34,7 +34,7 @@ fn process_input(bytes: &[u8]) -> usize {
         }
 
         match win_count {
-            0 => {},
+            0 => {}
             _ => {
                 total_score += 1 << (win_count - 1);
             }
@@ -45,7 +45,8 @@ fn process_input(bytes: &[u8]) -> usize {
 }
 
 fn numbers(bytes: &[u8]) -> impl Iterator<Item = usize> + '_ {
-    bytes.split(|&byte| byte == b' ')
+    bytes
+        .split(|&byte| byte == b' ')
         .filter(|&slice| !slice.is_empty())
         .map(|slice| atoi::<usize>(slice).unwrap())
 }
