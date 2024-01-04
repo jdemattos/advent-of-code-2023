@@ -15,12 +15,13 @@ fn process_input(bytes: &[u8]) -> usize {
 
     let mut total_score = 0;
 
+    let mut winning_numbers = BTreeSet::new();
+
     for line in lines {
         let mut sections = line.split(|&byte| byte == b':' || byte == b'|');
         let _card_section = sections.next();
 
         let winning_numbers_section = sections.next().unwrap();
-        let mut winning_numbers = BTreeSet::new();
         for winning_number in numbers(winning_numbers_section) {
             winning_numbers.insert(winning_number);
         }
@@ -39,6 +40,8 @@ fn process_input(bytes: &[u8]) -> usize {
                 total_score += 1 << (win_count - 1);
             }
         }
+
+        winning_numbers.clear();
     }
 
     total_score
