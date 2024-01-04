@@ -41,6 +41,7 @@ fn process_input(bytes: &[u8]) -> usize {
             Some(count) => *count,
             None => 1,
         };
+        // NOTE: card_win_count_map[card_number] ends its lifetime at this point and can be dropped, but there is perf tax for doing so
 
         for new_card_number in (0..win_count).map(|index| card_number + index + 1) {
             match card_win_count_map.get_mut(&new_card_number) {
@@ -54,10 +55,6 @@ fn process_input(bytes: &[u8]) -> usize {
         }
 
         total_card_count += 1 + win_count * card_count;
-        // NOTE: card_win_count_map[card_number] ends its lifetime at this point and can be dropped, but there is perf tax for doing so
-        // if card_count == 1 {
-        //     card_win_count_map.remove(&card_number);
-        // }
     }
 
     total_card_count
